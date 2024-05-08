@@ -1,0 +1,29 @@
+Block mechanics:
+Jiggle physics on sliced block.
+Material that is reduced with the block sliced.
+shaved block contain remaining textures.
+Basically we want the block to look like a sliced ham.
+
+General Game Mechanics:
+Restart Level, setting everything back up without removing user choices.
+
+Audio:
+Audio Manager.
+Sliced peices need to bouce with sound, limit this to 3/4 times per peice in case of
+stuck peices.
+
+ui:
+restart menu
+Settings Menu
+smooth transitions between all the menus.
+Fade out transition for restarts and return to menu.
+save user choices for audio and platters.
+
+Carema work:
+zoom in for smaller blocks.
+at the end go down the stack until the bottom.
+
+Additional:
+Realistic mode all the food materials replaced with realistic textures. 
+Blood Mode, blood effects when slicing meat.
+Screaming maybe? Maybe Peta will like that one + the realistic one.
