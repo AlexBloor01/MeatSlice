@@ -9,24 +9,46 @@ public class FoodController : MonoBehaviour
     public ChoppingBoard choppingBoard;
 
     public GameObject[] foodToInstantiate; //Food chosen to use during game.
-    public float foodYSize = 1f;
 
-    private GameObject currentFood;
-    private Transform previousFood;
-    public Transform tempPivot;
+    private GameObject nextFood; //Stores next food to instantiante in the game loop.
+    private GameObject currentFood; //Stores the current food to access in the game loop.
+    private Transform previousFood; //Stores previous food to instantiante in the game loop.
+    public Transform tempPivot; //Scales the block to fit the next stage of the game loop.
 
-    private const int scaleFactor = 10;
+    private const int scaleFactor = 10; //Scale of each base object on the x and y axis.
     public const int difficultyVarient = 4;
+    private const int minimumScale = 2; //Minumum scaling of the foodYScale, if an object is below or equal to this number it will be too small to alter.
 
-    public bool isFoodSliced = true; //This stops spamming while loading next food or in menus.
 
-    float pushForce = 10f;
-    float lowPushPercent = 0.8f; //lower choice percentage of pushForce.
-    float maxPushPercent = 1.2f; //max choice percentage of pushForce.
+    public bool isFoodSliced = true; //This stops spamming the slice button while loading next food or in menus.
+    private float foodYScale = 1f; //Scale of the current foods Y scale.
 
+    private const float pushForce = 10f; //Force of an object assigned rigid body and the applied force/speed of that push. 
+    private const float pushForceVariance = 0.4f; //This will take standardPushForce and plus of minus to give the lowest possible push and the highest.
+    private const float standardPushForce = 1f; //This will be the median times force of pushForce.
+
+
+    private void Awake()
+    {
+        SetupVariables();
+    }
+
+    void SetupVariables()
+    {
+        if (movement == null)
+        {
+            movement = FindObjectOfType<Movement>();
+        }
+
+        if (choppingBoard == null)
+        {
+            choppingBoard = FindObjectOfType<ChoppingBoard>();
+        }
+    }
 
     public void Reset()
     {
+        nextFood = null;
         currentFood = null;
         NewPreviousFood(choppingBoard.choppingBoardObject);
         isFoodSliced = true;
@@ -40,37 +62,44 @@ public class FoodController : MonoBehaviour
         previousFood = obj.transform;
     }
 
+    void LoadNextFood()
+    {
+        nextFood = foodToInstantiate[UnityEngine.Random.Range(0, foodToInstantiate.Length)];
+
+        int yScale = (int)nextFood.transform.localScale.y;
+
+        if (yScale > minimumScale)
+        {
+            int lowerRnage = yScale - (int)minimumScale / 2;
+            int upperRange = yScale + (int)minimumScale / 2;
+            yScale = UnityEngine.Random.Range(lowerRnage, upperRange);
+        }
+        foodYScale = yScale;
+    }
+
     //Pick a random food to spawn inside the foodToInstantiate array.
     public void InstantiateNewFood()
     {
-        GameObject newFood = Instantiate(foodToInstantiate[UnityEngine.Random.Range(0, foodToInstantiate.Length - 1)]);
+        if (nextFood == null)
+        {
+            LoadNextFood();
+        }
+        GameObject newFood = Instantiate(nextFood);
         newFood.transform.SetParent(transform);
         newFood.transform.localPosition = Vector3.zero;
-
-        int yScale = (int)newFood.transform.localScale.y;
-        if (yScale > 3)
-        {
-            yScale = UnityEngine.Random.Range(yScale - 2, yScale + 2);
-        }
-        foodYSize = yScale;
-
-
 
         if (currentFood != null)
         {
             NewPreviousFood(currentFood);
-            newFood.transform.localScale = ReplaceY(previousFood.transform.localScale, yScale);//new Vector3(previousFood.localScale.x, yScale, previousFood.localScale.z); 
+            newFood.transform.localScale = ReplaceY(previousFood.transform.localScale, foodYScale);
             currentFood = newFood;
-            movement.StartMovement(previousFood.transform.position); //ReplaceY(previousFood.transform.position, previousFood.transform.position.y + yScale));//  new Vector3(previousFood.transform.position.x, previousFood.transform.position.y + yScale, previousFood.transform.position.z));
+            movement.StartMovement(previousFood.transform.position);
         }
         else
         {
-            newFood.transform.localScale = ReplaceY(newFood.transform.localScale, yScale);// new Vector3(newFood.transform.localScale.x, yScale, newFood.transform.localScale.z);
+            newFood.transform.localScale = ReplaceY(newFood.transform.localScale, foodYScale);
             currentFood = newFood;
-            // if (yScale > 1)
-            // {
-            StartCoroutine(choppingBoard.MoveToNextYPosition(false));
-            // }
+            StartCoroutine(choppingBoard.MoveToNextYPosition(false, foodYScale));
             movement.StartMovement(movement.centerPointCenter);
         }
         isFoodSliced = false;
@@ -99,10 +128,21 @@ public class FoodController : MonoBehaviour
         //Set parent to chopping board.
         currentFood.transform.SetParent(choppingBoard.transform);
 
+        NextGenerationStep();
+    }
+
+    void NextGenerationStep()
+    {
         //Continue to next round if the game is not over.
         if (GameManager.gameOver == false)
         {
-            StartCoroutine(choppingBoard.MoveToNextYPosition(true));
+            LoadNextFood();
+            float difference = foodYScale;
+            if (nextFood.transform.localScale.y != currentFood.transform.localScale.y)
+            {
+                difference = (currentFood.transform.localScale.y * 0.5f) + (foodYScale * 0.5f);
+            }
+            StartCoroutine(choppingBoard.MoveToNextYPosition(true, difference));
         }
     }
 
@@ -216,7 +256,7 @@ public class FoodController : MonoBehaviour
 
     private void CreateSlice(Vector3 newScale, float xDiff, float zDiff, bool isSpawnPointA)
     {
-        Vector3 newSliceScale = ReplaceY(previousFood.transform.localScale, currentFood.transform.localScale.y);// new Vector3(previousFood.transform.localScale.x, currentFood.transform.localScale.y, previousFood.transform.localScale.z);
+        Vector3 newSliceScale = ReplaceY(previousFood.transform.localScale, currentFood.transform.localScale.y);
 
         if (xDiff > zDiff)
         {
@@ -244,11 +284,11 @@ public class FoodController : MonoBehaviour
         Vector3 targetDirection = newSlice.transform.position - tempPivot.position;
 
         //Rotate Towards direction.
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, float.MaxValue, 0.0f);
+        Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, float.MaxValue, 0f);
         transform.rotation = Quaternion.LookRotation(newDirection);
 
         //Push in direction.
-        float _pushForce = pushForce * UnityEngine.Random.Range(lowPushPercent, maxPushPercent);
+        float _pushForce = pushForce * UnityEngine.Random.Range(standardPushForce - pushForceVariance, standardPushForce + pushForceVariance);
         rb.velocity = targetDirection * _pushForce;
 
         //Add Rotation based on direction.

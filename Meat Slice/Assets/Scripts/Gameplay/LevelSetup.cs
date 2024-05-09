@@ -24,7 +24,7 @@ public class LevelSetup : MonoBehaviour
 
         if (foodController == null)
         {
-
+            foodController = FindObjectOfType<FoodController>();
         }
     }
 
@@ -93,11 +93,21 @@ public class LevelSetup : MonoBehaviour
 
     public void SetupLevel()
     {
-        foodController.Reset();
+        ResetHolder();
+        ResetChoppingboard();
+        FoodToInstantiateSetup();
+    }
 
+    public void ResetHolder()
+    {
+        foodController.Reset();
+        RemoveChildGameObjects(foodController.transform, null);
+    }
+
+    public void ResetChoppingboard()
+    {
         GameObject[] objectsToAvoid = { foodController.choppingBoard.choppingBoardObject, foodController.tempPivot.gameObject };
         RemoveChildGameObjects(foodController.choppingBoard.transform, objectsToAvoid);
-        FoodToInstantiateSetup();
     }
 
     void RemoveChildGameObjects(Transform parent, GameObject[] avoid)

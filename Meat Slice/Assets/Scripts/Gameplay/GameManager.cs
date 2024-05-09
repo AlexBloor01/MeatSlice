@@ -40,5 +40,11 @@ public class GameManager : MonoBehaviour
         MainMenu.iMainMenu.ReturnToMainMenu();
     }
 
+    public void ReturnToMenu()
+    {
+        GameOver();
+        levelSetup.ResetHolder();
+        levelSetup.ResetChoppingboard();
+    }
 
 }

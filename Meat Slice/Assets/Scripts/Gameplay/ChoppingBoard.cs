@@ -8,6 +8,7 @@ public class ChoppingBoard : MonoBehaviour
     public GameObject choppingBoardObject; //The physical chopping board Child under this Game Object.
     public float duration = 1f; //Duration of lerp. This can be used for different Speed modes if the player wants.
 
+    private const float choppingBoardSpace = 1f;
     Vector3 startingPosition;
 
     private void Start()
@@ -18,33 +19,25 @@ public class ChoppingBoard : MonoBehaviour
     void SetupVariables()
     {
         startingPosition = transform.position;
+
+        if (foodController == null)
+        {
+            foodController = FindObjectOfType<FoodController>();
+        }
     }
 
-    public IEnumerator MoveToNextYPosition(bool newFood)
+    //Moves To the yMovement position along the y axis then continues to next generation of the game loop.
+    public IEnumerator MoveToNextYPosition(bool newFood, float yMovement)
     {
         if (GameManager.gameOver == false)
         {
             float percentage = 0f;
             float timer = 0f;
-            float newYPos = newFood ? foodController.foodYSize : (foodController.foodYSize / 2);
-            if (newFood)
+            float newYPos = yMovement;
+
+            if (newFood == false)
             {
-                newYPos = foodController.foodYSize;
-
-            }
-            else
-            {
-                if (foodController.foodYSize > 1)
-                {
-                    newYPos = foodController.foodYSize / 2;
-                    // newYPos -= 0.5f;
-                }
-
-                // if ( && foodController.foodYSize > 1)
-                // {
-                //     newYPos -= 0.5f;
-                // }
-
+                newYPos = (yMovement / 2) - choppingBoardSpace;
             }
 
             Vector3 newPosition = new Vector3(
@@ -67,6 +60,7 @@ public class ChoppingBoard : MonoBehaviour
         yield return null;
     }
 
+    //This is played when game is reset.
     public void ReturnToOrigin()
     {
         transform.position = startingPosition;

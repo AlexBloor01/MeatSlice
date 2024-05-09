@@ -11,12 +11,12 @@ public class Movement : MonoBehaviour
     public Transform spawnPointB; //Possible food spawn position.
     public Transform startMovementPoint; //Current position the food will spawn from.
 
-    public Vector3 centerPointCenter;
+    public Vector3 centerPointCenter; //Returns to this point when game restarts.
 
-    private float speed = 1;
+    private float speed = 1; //Speed of PingPong movement. This could increase difficulty
 
-    private const float lowerPercentage = 0.4f;
-    private const float higherPercentage = 0.6f;
+    private const float lowerSlowMoPercentage = 0.4f; //Lowest required position in lerp to start slow motion.
+    private const float higherSlowMoPercentage = 0.6f; //highest required position in lerp to start slow motion.
 
     private void Start()
     {
@@ -67,7 +67,7 @@ public class Movement : MonoBehaviour
         yield return null;
 
         //Continue until StopMovement is played.
-        while (true)
+        while (GameManager.gameOver == false)
         {
             elapsedTime += Time.deltaTime * speed;
             float pingPong = Mathf.PingPong(elapsedTime, 1f);
@@ -75,7 +75,7 @@ public class Movement : MonoBehaviour
 
             if (GameManager.slowMode)
             {
-                if (pingPong > lowerPercentage && pingPong < higherPercentage)
+                if (pingPong > lowerSlowMoPercentage && pingPong < higherSlowMoPercentage)
                 {
                     Time.timeScale = GameManager.slowSpeed;
                 }
