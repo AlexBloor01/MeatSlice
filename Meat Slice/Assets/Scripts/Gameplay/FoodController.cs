@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FoodController : MonoBehaviour
 {
     [SerializeField] private Movement movement;
     public ChoppingBoard choppingBoard;
+    // [SerializeField] private JellyMesh jellyMesh;
 
     public GameObject[] foodToInstantiate; //Food chosen to use during game.
 
@@ -16,14 +18,15 @@ public class FoodController : MonoBehaviour
     public Transform tempPivot; //Scales the block to fit the next stage of the game loop.
 
     private const int scaleFactor = 10; //Scale of each base object on the x and y axis.
-    public const int difficultyVarient = 4;
+    public const int difficultyVarient = 4; //UPDATE Positioning so it can do 2 with accuracy.
     private const int minimumScale = 2; //Minumum scaling of the foodYScale, if an object is below or equal to this number it will be too small to alter.
 
 
     public bool isFoodSliced = true; //This stops spamming the slice button while loading next food or in menus.
     private float foodYScale = 1f; //Scale of the current foods Y scale.
 
-    private const float pushForce = 10f; //Force of an object assigned rigid body and the applied force/speed of that push. 
+    private const float pushForce = 3.5f; //Force of an object assigned rigid body and the applied force/speed of that push. 
+    const float slicePositionIncrease = 5f; //This is the position away from the original slice the object will instantiate from. This must be above 1.
     private const float pushForceVariance = 0.4f; //This will take standardPushForce and plus of minus to give the lowest possible push and the highest.
     private const float standardPushForce = 1f; //This will be the median times force of pushForce.
 
@@ -165,6 +168,8 @@ public class FoodController : MonoBehaviour
         Vector3 boxPosition = GetBoxPosition(isSpawnPointA, currentFoodPos, prevFoodPos, distance, out float xDiff, out float zDiff);
 
         tempPivot.position = boxPosition;
+
+        //Set temp pivot as currentFood parent.
         currentFood.transform.SetParent(tempPivot);
 
         Vector3 newScale = CalculateNewScale(tempPivot.localScale, xDiff, zDiff);
@@ -176,9 +181,79 @@ public class FoodController : MonoBehaviour
             GameOver();
             return;
         }
-
+        //Set new scale.
         tempPivot.localScale = newScale;
-        CreateSlice(newScale, xDiff, zDiff, isSpawnPointA);
+
+        //Unparent currentFood from the temp pivot.
+        currentFood.transform.SetParent(choppingBoard.transform);
+
+        CreateSlice(newScale, xDiff, zDiff, isSpawnPointA, currentFoodPos, prevFoodPos, distance);
+    }
+
+    private void CreateSlice(Vector3 newScale, float xDiff, float zDiff, bool isSpawnPointA, Vector3 currentFoodPos, Vector3 prevFoodPos, float distance)
+    {
+        Vector3 newSliceScale = ReplaceY(previousFood.transform.localScale, currentFood.transform.localScale.y);
+
+        //Set the opposite box position on the Temp Pivot for slicing.
+        Vector3 oppositeBoxPosition = GetBoxPosition(isSpawnPointA, prevFoodPos, currentFoodPos, distance, out _, out _);
+        Vector3 slicePosition = oppositeBoxPosition;
+
+        float increaseX = 1;
+        float increaseZ = 1;
+
+        //Scale Slice based on which of x or z difference is higher.
+        if (!isSpawnPointA)
+        {
+            newSliceScale = new Vector3(xDiff * scaleFactor, newSliceScale.y, newSliceScale.z);
+            increaseX = (currentFood.transform.localScale.x * newScale.x) / 2;
+            if (slicePosition.x < 0) increaseX = -increaseX;
+        }
+        else
+        {
+            newSliceScale = new Vector3(newSliceScale.x, newSliceScale.y, zDiff * scaleFactor);
+            increaseZ = (currentFood.transform.localScale.z * newScale.z) / 2;
+            if (slicePosition.z < 0) increaseZ = -increaseZ;
+        }
+
+        GameObject newSlice = Instantiate(currentFood);
+        newSlice.transform.localScale = newSliceScale;
+
+        slicePosition = new Vector3(slicePosition.x + increaseX, slicePosition.y, slicePosition.z + increaseZ);
+
+        newSlice.transform.position = slicePosition;
+
+        AssignPhysics(newSlice);
+    }
+
+
+    void AssignPhysics(GameObject newSlice)
+    {
+        if (newSlice.transform.GetChild(0))
+        {
+            GameObject parent = newSlice;
+            newSlice = newSlice.transform.GetChild(0).gameObject;
+            newSlice.transform.SetParent(null);
+            Destroy(parent);
+            newSlice.AddComponent<BoxCollider>();
+        }
+
+        Rigidbody rb = newSlice.AddComponent<Rigidbody>();
+        rb.useGravity = true;
+
+        Vector3 targetDirection = newSlice.transform.position - tempPivot.position;
+
+        //Rotate Towards direction.
+        Quaternion lookDirection = Quaternion.LookRotation(targetDirection);
+        transform.rotation = lookDirection;
+
+        //Push in direction.
+        float _pushForce = pushForce * UnityEngine.Random.Range(standardPushForce - pushForceVariance, standardPushForce + pushForceVariance);
+        rb.velocity = targetDirection * _pushForce;
+
+        //Add Rotation based on direction.
+        rb.AddTorque((-targetDirection * _pushForce) * _pushForce);
+
+        newSlice.AddComponent<JellyMesh>();
     }
 
     // if you want to round to 0.33 varient == 3.
@@ -217,7 +292,16 @@ public class FoodController : MonoBehaviour
 
     private Vector3 GetBoxPosition(bool isSpawnPointA, Vector3 currentPos, Vector3 prevPos, float distance, out float xDiff, out float zDiff)
     {
-        BoxCollider boxCollider = currentFood.GetComponent<BoxCollider>();
+        BoxCollider boxCollider;
+        if (currentFood.GetComponent<BoxCollider>())
+        {
+            boxCollider = currentFood.GetComponent<BoxCollider>();
+        }
+        else
+        {
+            boxCollider = currentFood.AddComponent<BoxCollider>();
+        }
+
         Vector3 boxCenter = boxCollider.center;
         Vector3 halfSize = boxCollider.size / 2;
         Vector3 boxPosition = Vector3.one;
@@ -254,51 +338,11 @@ public class FoodController : MonoBehaviour
         return newScale;
     }
 
-    private void CreateSlice(Vector3 newScale, float xDiff, float zDiff, bool isSpawnPointA)
-    {
-        Vector3 newSliceScale = ReplaceY(previousFood.transform.localScale, currentFood.transform.localScale.y);
 
-        if (xDiff > zDiff)
-        {
-            newSliceScale = new Vector3(xDiff * scaleFactor, newSliceScale.y, newSliceScale.z);
-        }
-        else
-        {
-            newSliceScale = new Vector3(newSliceScale.x, newSliceScale.y, zDiff * scaleFactor);
-        }
-
-        GameObject newSlice = Instantiate(currentFood);
-        newSlice.transform.localScale = newSliceScale;
-
-        Vector3 slicePosition = GetBoxPosition(!isSpawnPointA, tempPivot.position, tempPivot.position, 0, out _, out _);
-        newSlice.transform.position = slicePosition;
-
-        AssignRigidbody(newSlice);
-    }
-
-    void AssignRigidbody(GameObject newSlice)
-    {
-        Rigidbody rb = newSlice.AddComponent<Rigidbody>();
-        rb.useGravity = true;
-
-        Vector3 targetDirection = newSlice.transform.position - tempPivot.position;
-
-        //Rotate Towards direction.
-        Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, float.MaxValue, 0f);
-        transform.rotation = Quaternion.LookRotation(newDirection);
-
-        //Push in direction.
-        float _pushForce = pushForce * UnityEngine.Random.Range(standardPushForce - pushForceVariance, standardPushForce + pushForceVariance);
-        rb.velocity = targetDirection * _pushForce;
-
-        //Add Rotation based on direction.
-        rb.AddTorque(targetDirection * _pushForce);
-
-    }
 
     private void GameOver()
     {
-        AssignRigidbody(currentFood);
+        AssignPhysics(currentFood);
         GameManager.GameOver();
     }
 
