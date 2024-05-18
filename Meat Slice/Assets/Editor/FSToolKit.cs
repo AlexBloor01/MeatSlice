@@ -20,6 +20,45 @@ public class DeleteSave : MonoBehaviour
 
 }
 
+// public class AmbientOcclusionBaker : EditorWindow
+// {
+//     //Bake an ambient occlusion map for all the objects selected, taking their uv's into account.
+//     [MenuItem("Tools/Bake Ambient Occlusion")]
+//     public static void ShowWindow()
+//     {
+//         GetWindow<AmbientOcclusionBaker>("Bake Ambient Occlusion");
+//     }
+
+//     void OnGUI()
+//     {
+//         GUILayout.Label("Select Objects to Bake AO:");
+
+
+
+//         if (GUILayout.Button("Bake AO"))
+//         {
+//             BakeAO();
+//         }
+//     }
+
+//     void BakeAO()
+//     {
+//         // Access selected objects
+//         GameObject[] selectedObjects = Selection.gameObjects;
+
+//         // Loop through selected objects and perform baking
+//         foreach (GameObject obj in selectedObjects)
+//         {
+//             // Your ambient occlusion baking logic here
+//             // Example: Use Lightmapping API to bake AO
+//             // Example: Save baked AO to a file
+//         }
+
+//         Debug.Log("Ambient Occlusion Baking Complete!");
+//     }
+// }
+
+
 public class TransformObjects : EditorWindow
 {
     string baseName = "Base Name";
@@ -33,7 +72,7 @@ public class TransformObjects : EditorWindow
 
     int undoLimit = 30;
 
-    [MenuItem("Object Controls/Transform Selected Objects")]
+    [MenuItem("Tools/Objects/Transform Selected Objects")]
     public static void ShowWindow()
     {
         GetWindow<TransformObjects>("Transform Selected Objects");
@@ -342,7 +381,7 @@ public class GridObjects : EditorWindow
     float yAxis = 0f;
 
     //Next Tool will be one that sets the localposition to 000 scale to 111 and rotation to 000
-    [MenuItem("Object Controls/Grid Objects")]
+    [MenuItem("Tools/Objects/Grid Objects")]
     public static void ShowWindow()
     {
         GetWindow(typeof(GridObjects));

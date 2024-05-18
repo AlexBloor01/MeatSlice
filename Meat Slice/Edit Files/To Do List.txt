@@ -3,6 +3,8 @@ Jiggle physics on sliced block.
 Material that is reduced with the block sliced.
 shaved block contain remaining textures.
 Basically we want the block to look like a sliced ham.
+Block to fade when hits the death block then destroyed rather than an immediatly obvious 
+effect.
 
 General Game Mechanics:
 Restart Level, setting everything back up without removing user choices.

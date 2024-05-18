@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class ChoppingBoard : MonoBehaviour
 {
-    [SerializeField] private FoodController foodController;
+    [SerializeField] private FoodController foodController; //Reference to FoodController script in scene.
     public GameObject choppingBoardObject; //The physical chopping board Child under this Game Object.
     public float duration = 1f; //Duration of lerp. This can be used for different Speed modes if the player wants.
-
-    private const float choppingBoardSpace = 1f;
-    Vector3 startingPosition;
+    Vector3 startingPosition; //This is the starting position of the choppingboard when game is first started.
 
     private void Start()
     {
         SetupVariables();
     }
 
+    //Sets up script variables at start.
     void SetupVariables()
     {
         startingPosition = transform.position;
@@ -37,7 +36,7 @@ public class ChoppingBoard : MonoBehaviour
 
             if (newFood == false)
             {
-                newYPos = (yMovement / 2) - choppingBoardSpace;
+                newYPos = (yMovement / 2) - Mathf.Abs(transform.position.y);
             }
 
             Vector3 newPosition = new Vector3(

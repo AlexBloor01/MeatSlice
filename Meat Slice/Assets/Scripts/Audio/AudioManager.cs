@@ -10,16 +10,18 @@ public class AudioManager : MonoBehaviour
     public static AudioManager iAudioManager; //Access the AudioManager with AudioManager.iAudioManager...
     private float masterVolume = 1f; //Current Master Volume.
     private float musicVolume = 0.7f; //Current Music Volume.
-    private float SFXVolume = 0.5f; //Current SFX Volume.
+    private float SFXVolume = 1f; //Current SFX Volume.
+    private float whooshVolume = 1f; //Current Whoosh Volume.
 
-    public AudioSource SFXAudioSource;
-    public AudioClip[] squelch; //Squelch Sounds for sliced food slapping things as it falls.
+    public AudioSource SFXAudioSource; //Sound Effect Audiosource.
+    public AudioSource WhooshAudioSource; //Whoosh Audiosource.
     public AudioClip[] slice; //Slice Sounds for slicing food button.
-    public AudioClip[] whoosh; //Whooshing Sounds for holder going back and forth.
+    public AudioClip[] squelch; //Squelch Sounds for sliced food slapping things as it falls.
+    public AudioClip whoosh; //Whooshing Sound for holder going back and forth.
 
 
-    Coroutine musicCoroutine; //Music Coroutine
-    public AudioSource musicAudioSource; //Audio source for music
+    Coroutine musicCoroutine; //Music Coroutine.
+    public AudioSource musicAudioSource; //Music Audiosource.
     public AudioClip[] musicPlaylist; //Place all music clips in order here.
     private int musicIndex = -1; //Must start at -1. Controls position in the music playlist.
     #endregion
@@ -30,6 +32,7 @@ public class AudioManager : MonoBehaviour
         SetupVariables();
     }
 
+    //Sets up script variables.
     private void SetupVariables()
     {
         musicIndex = 0;
@@ -38,28 +41,31 @@ public class AudioManager : MonoBehaviour
         {
             PlayMusic();
         }
+
+    }
+
+    private void Start()
+    {
         LoadSettings();
     }
 
+    //Loads all presets required for game audio.
+    //Also saves if the game has been played before or not.
+    //Must be played on start.
     private void LoadSettings()
     {
-        bool playedBefore = PlayerPrefs.GetInt("Played_Before") != 0;
-
-        if (playedBefore)
+        if (GameManager.playedBefore)
         {
             Debug.Log("Played Before");
             musicAudioSource.mute = PlayerPrefs.GetInt("Mute_Music") == 1;
-            SFXAudioSource.mute = PlayerPrefs.GetInt("Mute_Music") == 1;
-            masterVolume = PlayerPrefs.GetFloat("Master_Volume");
+            SFXAudioSource.mute = PlayerPrefs.GetInt("Mute_SFX") == 1;
+            WhooshAudioSource.mute = SFXAudioSource.mute;
 
+            masterVolume = PlayerPrefs.GetFloat("Master_Volume");
             SFXVolume = PlayerPrefs.GetFloat("SFX_Volume");
             musicVolume = PlayerPrefs.GetFloat("Music_Volume");
         }
-        else
-        {
-            Debug.Log("Not Played Before");
-            PlayerPrefs.SetInt("Played_Before", 1);
-        }
+
         UpdateAllVolume();
     }
 
@@ -120,7 +126,8 @@ public class AudioManager : MonoBehaviour
     public void MuteSFX()
     {
         SFXAudioSource.mute = !SFXAudioSource.mute;
-        PlayerPrefs.SetInt("Mute_Music", musicAudioSource.mute ? 1 : 0);
+        WhooshAudioSource.mute = SFXAudioSource.mute;
+        PlayerPrefs.SetInt("Mute_SFX", musicAudioSource.mute ? 1 : 0);
     }
     #endregion
 
@@ -140,6 +147,12 @@ public class AudioManager : MonoBehaviour
     {
         masterVolume = volume;
         UpdateAllVolume();
+    }
+
+    public void WhooshVolumeControl(float volume)
+    {
+        whooshVolume = volume;
+        WhooshAudioSource.volume = whooshVolume * SFXVolume * masterVolume;
     }
 
     private void UpdateAllVolume()
