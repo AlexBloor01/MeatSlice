@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ChoppingBoard : MonoBehaviour
@@ -8,6 +7,7 @@ public class ChoppingBoard : MonoBehaviour
     public GameObject choppingBoardObject; //The physical chopping board Child under this Game Object.
     public float duration = 1f; //Duration of lerp. This can be used for different Speed modes if the player wants.
     Vector3 startingPosition; //This is the starting position of the choppingboard when game is first started.
+
 
     private void Start()
     {
@@ -53,8 +53,6 @@ public class ChoppingBoard : MonoBehaviour
             }
 
             if (newFood) foodController.InstantiateNewFood();
-
-            yield return null;
         }
         yield return null;
     }

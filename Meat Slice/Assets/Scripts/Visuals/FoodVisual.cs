@@ -64,7 +64,10 @@ public class FoodVisual : MonoBehaviour
         int materialIndex = MaterialIndexByDistance(slicePosition, sliceScale);
 
         Material material = foodMaterials[materialIndex];
-        material.SetTexture(textureMap, sliceTextures[UnityEngine.Random.Range(0, sliceTextures.Length)]);
+        if (sliceTextures.Length > 0)
+        {
+            material.SetTexture(textureMap, sliceTextures[UnityEngine.Random.Range(0, sliceTextures.Length)]);
+        }
 
         //Set BlendShapeWeight if available.
         if (skinnedMeshRenderer != null)

@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class SettingsMenu : MonoBehaviour
 {
-    bool isSettingsMenuOpen = false; //Behaviour will reverse when bool switched.
-    public GameObject mainMenu; //Reference to mainMenu UI game object to set Active true or false based on isSettingsMenuOpen.
+    public bool isSettingsMenuOpen = false; //Behaviour will reverse when bool switched.
+
+    //Settings button references.
+    public GameObject settingButton; //Reference to the scenes UI settings button for hiding it.
+    float btnLerpDuration = 1;
+    public AnimationCurve btnAnimCurve;
+
 
     void Start()
     {
@@ -17,7 +22,6 @@ public class SettingsMenu : MonoBehaviour
     {
         isSettingsMenuOpen = false;
         transform.localScale = Vector3.zero;
-        mainMenu.SetActive(true);
     }
 
     //Button controlled open and close of settings menu.
@@ -26,7 +30,34 @@ public class SettingsMenu : MonoBehaviour
         isSettingsMenuOpen = !isSettingsMenuOpen;
         transform.localScale = isSettingsMenuOpen ? Vector3.one : Vector3.zero;
         Time.timeScale = isSettingsMenuOpen ? 0 : 1;
-        mainMenu.SetActive(isSettingsMenuOpen ? false : true);
         Score.iScore.gameObject.SetActive(isSettingsMenuOpen ? false : true);
+        MainMenu.iMainMenu.HideMainMenu();
+
+        if (isSettingsMenuOpen == false)
+        {
+            if (GameManager.gameOver == false)
+            {
+                MainMenu.iMainMenu.HideMainMenu();
+            }
+            else
+            {
+                MainMenu.iMainMenu.UnHideMainMenu();
+            }
+        }
+    }
+
+    public void ClickedSettingsButton()
+    {
+        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration / 3, Vector3.zero, Vector3.one, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
+    }
+
+    public void HideSettingsButton()
+    {
+        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration, Vector3.one, Vector3.zero, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
+    }
+
+    public void UnhideSettingsButton()
+    {
+        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration, Vector3.zero, Vector3.one, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
     }
 }

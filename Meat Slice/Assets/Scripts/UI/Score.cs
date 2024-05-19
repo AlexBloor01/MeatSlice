@@ -7,7 +7,11 @@ public class Score : MonoBehaviour
 {
     public static Score iScore;
     public TextMeshProUGUI scoreTextElement;
-    int score;
+    public int score;
+    public int meatCounter;
+    public int cheeseCounter;
+    public int vegetableCounter;
+    public int tofuCounter;
 
     void Start()
     {
@@ -21,18 +25,50 @@ public class Score : MonoBehaviour
         {
             scoreTextElement = GetComponent<TextMeshProUGUI>();
         }
-        score = 0;
+        ResetScore();
     }
 
-    public void AddScore()
+    public void AddScore(FoodType foodType)
     {
+        switch (foodType)
+        {
+            case FoodType.Meat:
+                meatCounter++;
+                break;
+
+            case FoodType.Cheese:
+                cheeseCounter++;
+                break;
+
+            case FoodType.Vegetables:
+                vegetableCounter++;
+                break;
+
+            case FoodType.VeganProtein:
+                tofuCounter++;
+                break;
+
+            case FoodType.None:
+                break;
+        }
+
         score++;
-        scoreTextElement.text = score.ToString();
+        UpdateScoreText();
     }
 
     public void ResetScore()
     {
         score = 0;
-        scoreTextElement.text = "0";
+        UpdateScoreText();
+
+        meatCounter = 0;
+        cheeseCounter = 0;
+        vegetableCounter = 0;
+        tofuCounter = 0;
+    }
+
+    void UpdateScoreText()
+    {
+        scoreTextElement.text = score.ToString();
     }
 }

@@ -155,8 +155,8 @@ public class FoodController : MonoBehaviour
     {
         //Get the rounded positions of current and previous food.
         Vector3 currentFoodPos = currentFood.transform.position;
-        currentFoodPos = new Vector3(RoundToPoint(currentFoodPos.x, difficultyVarient), 0, RoundToPoint(currentFoodPos.z, difficultyVarient));
-        currentFood.transform.position = currentFoodPos;
+        // currentFoodPos = new Vector3(RoundToPoint(currentFoodPos.x, difficultyVarient), 0, RoundToPoint(currentFoodPos.z, difficultyVarient));
+        // currentFood.transform.position = currentFoodPos;
         Vector3 prevFoodPos = previousFood.transform.position;
         prevFoodPos = new Vector3(RoundToPoint(previousFood.position.x, difficultyVarient), 0, RoundToPoint(previousFood.position.z, difficultyVarient));
 
@@ -179,7 +179,14 @@ public class FoodController : MonoBehaviour
             return;
         }
 
-        Score.iScore.AddScore();
+        FoodType foodType = FoodType.None;
+        if (currentFood.GetComponent<FoodCategory>())
+        {
+            foodType = currentFood.GetComponent<FoodCategory>().foodType;
+        }
+
+        Score.iScore.AddScore(foodType);
+
         //Set new scale.
         tempPivot.localScale = newScale;
         //Unparent currentFood from the temp pivot.
@@ -228,7 +235,6 @@ public class FoodController : MonoBehaviour
         GameObject newSlice = Instantiate(currentFood);
         newSlice.transform.localScale = newSliceScale;
         newSlice.transform.position = slicePosition;
-
 
         //Assign the visual based on the location of the pivot.
         //Newslice must be done before currentFood as it is a copy of currentFood and would take on its visuals.
@@ -386,5 +392,6 @@ public enum FoodType
     Meat,
     Cheese,
     Vegetables,
-    VeganProtein
+    VeganProtein,
+    None //Put this last.
 }

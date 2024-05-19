@@ -1,14 +1,16 @@
 using UnityEngine;
 using System;
+using Palmmedia.ReportGenerator.Core;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager iGameManager; //Reference to self.
-    public CloudTransition cloudTransition; //Reference to CloudTransition in scene.
     public LevelSetup levelSetup; //Reference to LevelSetup in scene.
+    public SettingsMenu settingsMenu; //Reference to SettingsMenu in scene.
+    public GameCompleteMenu gameCompleteMenu; //Reference to GameCompleteMenu in scene.
     public static bool playedBefore = false; //Has game been played before?
-    public static bool gameOver = false; //Has the game Finished?
-    public static bool slowMode = true; //Slow game when within 10
+    public static bool gameOver = true; //Has the game Finished?
+    public static bool slowMode = true; //Allow the game to be slowed down. 
     public static float slowSpeed = 0.1f; //Speed of slowmo, must be below 1 to go slow.
 
     private void Awake()
@@ -38,31 +40,46 @@ public class GameManager : MonoBehaviour
             Debug.Log("Not Played Before");
             PlayerPrefs.SetInt("Played_Before", 1);
         }
+
+        gameOver = true;
     }
 
     //Restarts the game.
     public void RestartGame()
     {
-        gameOver = false;
-        Action startAction = MainMenu.iMainMenu.CloseMainMenu;
-        startAction += levelSetup.SetupLevel;
+        // if (settingsMenu.isSettingsMenuOpen && gameOver)
+        // {
+        //     settingsMenu.ResetSettingsMenu();
+        //     return;
+        // }
 
-        StartCoroutine(CloudTransition.iMenuTransition.MenuTransition(startAction, null, null, 0));
+        settingsMenu.ResetSettingsMenu();
+        gameOver = true;
+        gameOver = false;
+        Action startAction = MainMenu.iMainMenu.HideMainMenuAnim;
+        startAction += levelSetup.SetupLevel;
+        StartCoroutine(CloudTransition.iMenuTransition.MenuTransition(startAction, null, levelSetup.StartLevel, 0));
     }
 
     //Ends the game.
     public void GameOver()
     {
         gameOver = true;
-        StartCoroutine(CloudTransition.iMenuTransition.MenuTransition(MainMenu.iMainMenu.ReturnToMainMenu, null, null, 0));
+        gameCompleteMenu.OpenGameCompleteMenu();
     }
 
     //Returns main menu.
     public void ReturnToMenu()
     {
-        GameOver();
-        levelSetup.ResetHolder();
-        levelSetup.ResetChoppingboard();
-    }
+        if (settingsMenu.isSettingsMenuOpen && gameOver)
+        {
+            settingsMenu.ResetSettingsMenu();
+            MainMenu.iMainMenu.UnHideMainMenu();
+            return;
+        }
 
+        gameOver = true;
+        settingsMenu.ResetSettingsMenu();
+        StartCoroutine(CloudTransition.iMenuTransition.MenuTransition(MainMenu.iMainMenu.UnHideMainMenuAnim, null, null, 0));
+    }
 }

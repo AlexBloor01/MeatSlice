@@ -87,8 +87,6 @@ public class LevelSetup : MonoBehaviour
         {
             foodController.foodToInstantiate = meatObjects;
         }
-
-        foodController.InstantiateNewFood();
     }
 
     public void SetupLevel()
@@ -96,6 +94,11 @@ public class LevelSetup : MonoBehaviour
         ResetHolder();
         ResetChoppingboard();
         FoodToInstantiateSetup();
+    }
+
+    public void StartLevel()
+    {
+        foodController.InstantiateNewFood();
     }
 
     public void ResetHolder()

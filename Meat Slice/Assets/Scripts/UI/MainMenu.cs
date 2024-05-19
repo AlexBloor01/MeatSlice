@@ -4,11 +4,13 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    Coroutine mainMenuAnimation;
     public static MainMenu iMainMenu; //This script.
-    public Image mainMenuBackground; //Main Menu background image attatched to this object.
-    public Color mainMenuBackgroundColour; //Colour attatched to mainMenuBackground so that it can be turned on and off later.
-    public Color clear = new Color(1, 1, 1, 0); //This will transition the color along white colours of rather than Color.clear.
-    private float transitionDuration = 0.5f; //Transition from background to clear.
+    private Image mainMenuBackground; //Main Menu background image attatched to this object.
+    Color mainMenuBackgroundColour; //Colour attatched to mainMenuBackground so that it can be turned on and off later.
+    private Color clear = new Color(1, 1, 1, 0); //This will transition the color along white colours of rather than Color.clear.
+    private float transitionDuration = 1f; //Transition from background to clear.
+    private float percentDisappearTime = 0.5f;
 
     private void Awake()
     {
@@ -22,34 +24,63 @@ public class MainMenu : MonoBehaviour
         mainMenuBackgroundColour = mainMenuBackground.color;
     }
 
-    public void ReturnToMainMenu()
+    public void HideMainMenu()
     {
-        mainMenuBackground.color = mainMenuBackgroundColour;
+        transform.localScale = Vector3.zero;
+    }
+
+    public void UnHideMainMenu()
+    {
         transform.localScale = Vector3.one;
     }
 
-    public void CloseMainMenu()
+    public void UnHideMainMenuAnim()
     {
-        StartCoroutine(CloseMainMenuAnimation());
+        if (mainMenuAnimation != null)
+        {
+            StopCoroutine(mainMenuAnimation);
+        }
+        mainMenuAnimation = StartCoroutine(MainMenuAnimation(false));
     }
 
-    IEnumerator CloseMainMenuAnimation()
+    public void HideMainMenuAnim()
     {
+        if (mainMenuAnimation != null)
+        {
+            StopCoroutine(mainMenuAnimation);
+        }
+        mainMenuAnimation = StartCoroutine(MainMenuAnimation(true));
+    }
+
+    IEnumerator MainMenuAnimation(bool bigToSmall)
+    {
+        if (bigToSmall == false) UnHideMainMenu();
+
         Image mainMenuBackground = GetComponent<Image>();
-        mainMenuBackground.color = mainMenuBackgroundColour;
 
         float elapsedTime = 0;
-        float percentage = 0;
+        float percent = 0;
 
-        while (percentage <= 1)
+        while (percent < 1)
         {
-            elapsedTime += Time.deltaTime;
-            percentage = elapsedTime / transitionDuration;
-            mainMenuBackground.color = Color.Lerp(mainMenuBackgroundColour, clear, percentage);
+            elapsedTime += Time.unscaledDeltaTime;
+            percent = elapsedTime / transitionDuration;
+
+            if (bigToSmall)
+            {
+                mainMenuBackground.color = Color.Lerp(mainMenuBackgroundColour, clear, percent);
+                if (percent > percentDisappearTime && transform.localScale.x != Vector3.zero.x)
+                {
+                    HideMainMenu();
+                }
+            }
+            else
+            {
+                mainMenuBackground.color = Color.Lerp(clear, mainMenuBackgroundColour, percent);
+            }
             yield return null;
         }
 
-        transform.localScale = Vector3.zero;
         yield return null;
     }
 

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 96844e1f9ae6bdf48aa3a8f94b11c820
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - scoreText: {instanceID: 0}
+  - meatCounterText: {instanceID: 0}
+  - tofuCounterText: {instanceID: 0}
+  - vegetableCounterText: {instanceID: 0}
+  - cheeseCounterText: {instanceID: 0}
+  - settingButton: {instanceID: 0}
+  - burgerBunPrefab: {fileID: 8249328792772502845, guid: 21571a8e5dd05db46ab13a655d23b549, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

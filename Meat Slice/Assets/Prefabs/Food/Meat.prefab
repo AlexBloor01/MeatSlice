@@ -93,6 +93,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7302410347976352080}
   - component: {fileID: 7302410347976352093}
+  - component: {fileID: -8741165437374103006}
   m_Layer: 0
   m_Name: Meat
   m_TagString: Untagged
@@ -130,6 +131,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-8741165437374103006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7302410347976352092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c807d3801a22744fb26576c9fe32b14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foodType: 0
 --- !u!1001 &415254052711415548
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -382,11 +396,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skinnedMeshRenderer: {fileID: 5750734541029320430}
-  sideTextures: []
+  sliceTextures: []
   baseTextures: []
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!137 &5750734541029320430 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -3887185075125053422, guid: b0932f1c8dae1644eb54633355491049, type: 3}
