@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Timeline;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
@@ -22,16 +23,7 @@ public class MainMenu : MonoBehaviour
         iMainMenu = this;
         mainMenuBackground = GetComponent<Image>();
         mainMenuBackgroundColour = mainMenuBackground.color;
-    }
-
-    public void HideMainMenu()
-    {
-        transform.localScale = Vector3.zero;
-    }
-
-    public void UnHideMainMenu()
-    {
-        transform.localScale = Vector3.one;
+        Menus.UnHideMenu(gameObject);
     }
 
     public void UnHideMainMenuAnim()
@@ -54,7 +46,7 @@ public class MainMenu : MonoBehaviour
 
     IEnumerator MainMenuAnimation(bool bigToSmall)
     {
-        if (bigToSmall == false) UnHideMainMenu();
+        if (bigToSmall == false) Menus.UnHideMenu(gameObject);
 
         Image mainMenuBackground = GetComponent<Image>();
 
@@ -71,7 +63,7 @@ public class MainMenu : MonoBehaviour
                 mainMenuBackground.color = Color.Lerp(mainMenuBackgroundColour, clear, percent);
                 if (percent > percentDisappearTime && transform.localScale.x != Vector3.zero.x)
                 {
-                    HideMainMenu();
+                    Menus.HideMenu(gameObject);
                 }
             }
             else

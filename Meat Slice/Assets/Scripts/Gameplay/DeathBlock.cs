@@ -6,9 +6,11 @@ public class DeathBlock : MonoBehaviour
 {
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.activeSelf)
+        if (other.gameObject.GetComponent<MarkedForDeath>() == null)
         {
-            Destroy(other.gameObject);
+            other.gameObject.AddComponent<MarkedForDeath>();
+
         }
     }
+
 }

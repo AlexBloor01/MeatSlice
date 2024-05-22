@@ -13,7 +13,9 @@ public class Movement : MonoBehaviour
 
     public Vector3 centerPointCenter; //Returns to this point when game restarts.
 
-    private float speed = 1; //Speed of PingPong movement. This could increase difficulty
+    public float speed = 1; //Speed of PingPong movement. This could increase difficulty
+    public const float maxSpeed = 3;
+    public const float minSpeed = 0.1f;
 
     private const float lowerSlowMoPercentage = 0.4f; //Lowest required position in lerp to start slow motion.
     private const float higherSlowMoPercentage = 0.6f; //highest required position in lerp to start slow motion.
@@ -26,6 +28,9 @@ public class Movement : MonoBehaviour
     void SetupVariables()
     {
         centerPointCenter = transform.position;
+
+        speed = PlayerPrefs.GetFloat("Game_Speed", 1);
+
     }
 
     //Stops movement, play this from other scripts.
@@ -110,5 +115,4 @@ public class Movement : MonoBehaviour
             return new Vector3(-startPosition.x, 0f, startPosition.z);
         }
     }
-
 }

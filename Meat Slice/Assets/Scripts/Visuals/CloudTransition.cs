@@ -65,9 +65,8 @@ public class CloudTransition : MonoBehaviour
         }
 
         middleAction?.Invoke();
-        yield return new WaitForSecondsRealtime(Numbers.GetPercent(duration, 70));
+        yield return new WaitForSecondsRealtime(duration);
         UIImage.raycastTarget = false;
-        yield return new WaitForSecondsRealtime(Numbers.GetPercent(duration, 30));
         UIImage.gameObject.SetActive(false);
         endAction?.Invoke();
         yield return null;

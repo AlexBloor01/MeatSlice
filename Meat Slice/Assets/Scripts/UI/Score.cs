@@ -12,6 +12,7 @@ public class Score : MonoBehaviour
     public int cheeseCounter;
     public int vegetableCounter;
     public int tofuCounter;
+    public int breadCounter;
 
     void Start()
     {
@@ -46,6 +47,10 @@ public class Score : MonoBehaviour
 
             case FoodType.VeganProtein:
                 tofuCounter++;
+                break;
+
+            case FoodType.Bread:
+                breadCounter++;
                 break;
 
             case FoodType.None:

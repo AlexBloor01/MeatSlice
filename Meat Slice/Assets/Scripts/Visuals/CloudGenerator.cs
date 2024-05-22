@@ -93,10 +93,10 @@ public class CloudGenerator : MonoBehaviour
 
         StartCoroutine(MovementLibrary.LerpOnce(cloudObj, lerpDuration, transform.position, target.position, true, MovementLibrary.ObjectLerpType.Position, RemoveIndex));
 
-        void RemoveIndex()
+        void RemoveIndex(GameObject target)
         {
             clouds--;
-            Destroy(cloudObj);
+            Destroy(target);
         }
 
     }

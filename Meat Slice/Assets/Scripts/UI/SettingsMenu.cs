@@ -5,11 +5,8 @@ using UnityEngine;
 public class SettingsMenu : MonoBehaviour
 {
     public bool isSettingsMenuOpen = false; //Behaviour will reverse when bool switched.
-
-    //Settings button references.
     public GameObject settingButton; //Reference to the scenes UI settings button for hiding it.
-    float btnLerpDuration = 1;
-    public AnimationCurve btnAnimCurve;
+    float lerpDuration = 1f; // Hide Settings Button Animation lerp duration.
 
 
     void Start()
@@ -28,36 +25,37 @@ public class SettingsMenu : MonoBehaviour
     public void OpenSettingsMenu()
     {
         isSettingsMenuOpen = !isSettingsMenuOpen;
-        transform.localScale = isSettingsMenuOpen ? Vector3.one : Vector3.zero;
-        Time.timeScale = isSettingsMenuOpen ? 0 : 1;
-        Score.iScore.gameObject.SetActive(isSettingsMenuOpen ? false : true);
-        MainMenu.iMainMenu.HideMainMenu();
 
-        if (isSettingsMenuOpen == false)
+        if (isSettingsMenuOpen)
         {
-            if (GameManager.gameOver == false)
+            Menus.HideMenu(MainMenu.iMainMenu.gameObject);
+            Menus.HideMenu(Score.iScore.gameObject);
+            Menus.UnHideMenu(gameObject);
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Menus.HideMenu(gameObject);
+            Menus.UnHideMenu(Score.iScore.gameObject);
+            Time.timeScale = 1;
+
+            //Hiding the main menu depends on if the game is over or not.
+            if (GameManager.gameOver == true)
             {
-                MainMenu.iMainMenu.HideMainMenu();
-            }
-            else
-            {
-                MainMenu.iMainMenu.UnHideMainMenu();
+                Menus.UnHideMenu(MainMenu.iMainMenu.gameObject);
             }
         }
     }
 
-    public void ClickedSettingsButton()
+    //Animation for hiding the settings button.
+    public void HideSettingsButtonAnim()
     {
-        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration / 3, Vector3.zero, Vector3.one, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
+        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, lerpDuration, Vector3.one, Vector3.zero, false, MovementLibrary.ObjectLerpType.LocalScale, GameManager.iGameManager.btnAnimCurve, null));
     }
 
-    public void HideSettingsButton()
+    //Animation for unhiding the settings button.
+    public void UnhideSettingsButtonAnim()
     {
-        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration, Vector3.one, Vector3.zero, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
-    }
-
-    public void UnhideSettingsButton()
-    {
-        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, btnLerpDuration, Vector3.zero, Vector3.one, false, MovementLibrary.ObjectLerpType.LocalScale, btnAnimCurve, null));
+        StartCoroutine(MovementLibrary.AnimationCurveLerp(settingButton, lerpDuration, Vector3.zero, Vector3.one, false, MovementLibrary.ObjectLerpType.LocalScale, GameManager.iGameManager.btnAnimCurve, null));
     }
 }

@@ -16,7 +16,7 @@ public class MovementLibrary : MonoBehaviour
     /// <typeparam name="ObjectLerpType">What type of lerp do you require? World Position, Local Position, Rotation, or Scale</typeparam>
     /// <typeparam name="onComplete" >When the lerp is complete what action do you want to happen after, put null for none</typeparam>
     /// <returns></returns>
-    public static IEnumerator LerpOnce(GameObject obj, float duration, Vector3 startValue, Vector3 endValue, bool scaledTime, ObjectLerpType ObjectLerpType, Action action)
+    public static IEnumerator LerpOnce(GameObject obj, float duration, Vector3 startValue, Vector3 endValue, bool scaledTime, ObjectLerpType ObjectLerpType, Action<GameObject> action)
     {
         //Check if it is a rotaiton. More efficient to make it its own function
         if (ObjectLerpType == ObjectLerpType.Rotation)
@@ -64,7 +64,7 @@ public class MovementLibrary : MonoBehaviour
             yield return null;
         }
 
-        action?.Invoke();
+        action?.Invoke(obj);
     }
 
     //Rotate from start Rotation to end Rotation once using Vector3 inputs once.
@@ -149,6 +149,20 @@ public class MovementLibrary : MonoBehaviour
 
         action?.Invoke();
     }
+}
+
+public class Menus
+{
+    public static void HideMenu(GameObject obj)
+    {
+        obj.transform.localScale = Vector3.zero;
+    }
+
+    public static void UnHideMenu(GameObject obj)
+    {
+        obj.transform.localScale = Vector3.one;
+    }
+
 }
 
 public class VectorLibrary : MonoBehaviour

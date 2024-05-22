@@ -5,11 +5,14 @@ using System.Linq;
 
 public class LevelSetup : MonoBehaviour
 {
-    [SerializeField] private FoodController foodController;
+    [SerializeField] private StartingPlatform startingPlatform; //Reference to Scene StartingPlatform Script.
+    [SerializeField] private Movement movement; //Reference to Scene Movement Script.
+    [SerializeField] private PlayerController playerController; //Reference to Scene PlayerController Script.
     [SerializeField] private GameObject[] meatObjects; //Meat Objects to use as stacking block.
     [SerializeField] private GameObject[] cheeseObjects; //Cheese Objects to use as stacking block.
     [SerializeField] private GameObject[] vegetableObjects; //Vegetable Objects to use as stacking block.
-    [SerializeField] private GameObject[] veganProteinObjects; //Vegan Protien Objects to use as stacking block. (Tofu and beans)
+    [SerializeField] private GameObject[] veganObjects; //Vegan Protien Objects to use as stacking block. (Tofu and beans)
+    [SerializeField] private GameObject[] breadObjects; //Bread Objects to use as stacking block.
     private GameObject[][] foodSetup; //This is an ordered array that will contain meatObjects,cheeseObjects, etc in order so that they can be removed or added dependant on user choices.
 
     private void Awake()
@@ -22,15 +25,25 @@ public class LevelSetup : MonoBehaviour
         //The foodSetup size is set based on number of FoodType options.
         foodSetup = new GameObject[FoodType.GetNames(typeof(FoodType)).Length][];
 
-        if (foodController == null)
+        if (playerController == null)
         {
-            foodController = FindObjectOfType<FoodController>();
+            playerController = FindObjectOfType<PlayerController>();
+        }
+
+        if (startingPlatform == null)
+        {
+            startingPlatform = FindObjectOfType<StartingPlatform>();
+        }
+
+        if (movement == null)
+        {
+            movement = FindObjectOfType<Movement>();
         }
     }
 
     //This sets up the level for a specific food type depending on player preferences.
     //Assign this to the toggles on the main menu.
-    public void ToggleMeatType(FoodType foodType, bool isOn)
+    public void ToggleFoodType(FoodType foodType, bool isOn)
     {
         if (isOn)
         {
@@ -49,7 +62,11 @@ public class LevelSetup : MonoBehaviour
                     break;
 
                 case FoodType.VeganProtein:
-                    foodSetup[(int)foodType] = veganProteinObjects;
+                    foodSetup[(int)foodType] = veganObjects;
+                    break;
+
+                case FoodType.Bread:
+                    foodSetup[(int)foodType] = breadObjects;
                     break;
             }
 
@@ -59,13 +76,13 @@ public class LevelSetup : MonoBehaviour
             foodSetup[(int)foodType] = null;
         }
 
-        Debug.Log($"MeatType: {foodType} isOn: {isOn}");
+        // Debug.Log($"MeatType: {foodType} isOn: {isOn}");
     }
 
     //Play this at the beginning of the game from the main menu start button, it will convert the player choices to foodToInstantiate at the beginning of the level.
-    private void FoodToInstantiateSetup()
+    private void FoodToInstantiateImport()
     {
-        foodController.foodToInstantiate = null;
+        playerController.foodToInstantiate = null;
         List<GameObject> foodToAdd = new List<GameObject>();
 
         for (int i = 0; i < foodSetup.Length; i++)
@@ -81,36 +98,50 @@ public class LevelSetup : MonoBehaviour
 
         if (foodToAdd.Count > 0)
         {
-            foodController.foodToInstantiate = foodToAdd.ToArray();
+            playerController.foodToInstantiate = foodToAdd.ToArray();
         }
         else
         {
-            foodController.foodToInstantiate = meatObjects;
+            playerController.foodToInstantiate = meatObjects;
         }
     }
 
     public void SetupLevel()
     {
-        ResetHolder();
-        ResetChoppingboard();
-        FoodToInstantiateSetup();
+        Menus.UnHideMenu(Score.iScore.gameObject);
+        ResetPlayerController();
+        ResetMovement();
+        Score.iScore.ResetScore();
+        ResetStartPlatform();
+        FoodToInstantiateImport();
     }
 
     public void StartLevel()
     {
-        foodController.InstantiateNewFood();
+        playerController.InstantiateNewFood();
     }
 
-    public void ResetHolder()
+    //Resets the Player controller.
+    //Activates player controllers reset and removes any child objects not required.
+    public void ResetPlayerController()
     {
-        foodController.Reset();
-        RemoveChildGameObjects(foodController.transform, null);
+        playerController.ResetPlayerController();
+        RemoveChildGameObjects(playerController.transform, null);
     }
 
-    public void ResetChoppingboard()
+    //Resets the Movement script for the player by stopping any current movement and returning to center point.
+    void ResetMovement()
     {
-        GameObject[] objectsToAvoid = { foodController.choppingBoard.choppingBoardObject, foodController.tempPivot.gameObject };
-        RemoveChildGameObjects(foodController.choppingBoard.transform, objectsToAvoid);
+        movement.StopMovement();
+        movement.SetCenterPoint(movement.centerPointCenter);
+    }
+
+    //Resets the Starting Platform by removes any child objects not required.
+    void ResetStartPlatform()
+    {
+        startingPlatform.ReturnToOrigin();
+        GameObject[] objectsToAvoid = { startingPlatform.startChildObject, playerController.scalePivot.gameObject };
+        RemoveChildGameObjects(playerController.startingPlatform.transform, objectsToAvoid);
     }
 
     void RemoveChildGameObjects(Transform parent, GameObject[] avoid)
@@ -131,3 +162,16 @@ public class LevelSetup : MonoBehaviour
         }
     }
 }
+
+#region Food Types
+//Different Foods to spawn.
+public enum FoodType
+{
+    Meat,
+    Cheese,
+    Vegetables,
+    VeganProtein,
+    Bread,
+    None //Put this last.
+}
+#endregion
