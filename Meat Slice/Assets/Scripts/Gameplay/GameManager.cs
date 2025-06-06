@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using Palmmedia.ReportGenerator.Core;
 
 public class GameManager : MonoBehaviour
 {

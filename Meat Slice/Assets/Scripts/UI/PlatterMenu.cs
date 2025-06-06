@@ -8,6 +8,7 @@ public class PlatterMenu : MonoBehaviour
     public Slider speedSlider;
     public TextMeshProUGUI speedTMPro;
     string speedText = "Game Speed: ";
+    int decimalPlaceDivider = 10;
 
 
     // Start is called before the first frame update
@@ -44,7 +45,10 @@ public class PlatterMenu : MonoBehaviour
     //Link this to game speed slider and movement to make the game faster or slower.
     public void SpeedControl(float _speed)
     {
-        movement.speed = _speed;
+        //This will force the speedcontrol to round to the nearest 0.1
+        float newSpeed = Mathf.Floor(_speed) + ((Mathf.Round(-((Mathf.Floor(_speed) - _speed)) * decimalPlaceDivider)) / decimalPlaceDivider);
+
+        movement.speed = newSpeed;
         speedTMPro.text = speedText + movement.speed.ToString("F2");
         PlayerPrefs.SetFloat("Game_Speed", movement.speed);
     }

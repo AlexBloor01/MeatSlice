@@ -5,8 +5,8 @@ using UnityEngine;
 public class SettingsMenu : MonoBehaviour
 {
     public bool isSettingsMenuOpen = false; //Behaviour will reverse when bool switched.
-    public GameObject settingButton; //Reference to the scenes UI settings button for hiding it.
-    float lerpDuration = 1f; // Hide Settings Button Animation lerp duration.
+    public GameObject settingButton; //Reference to the scenes UI settings button for hiding it (the cog icon).
+    float lerpDuration = 1f; //Hide Settings Button Animation lerp duration.
 
 
     void Start()
