@@ -52,6 +52,7 @@ public class GameCompleteMenu : MonoBehaviour
 
     public void OpenGameCompleteMenu()
     {
+        ResetCounters();
         SetupBurgerSpawner();
         UpdateCounters();
         bunsSpawned = new List<GameObject>();
@@ -72,6 +73,15 @@ public class GameCompleteMenu : MonoBehaviour
         settingsMenu.UnhideSettingsButtonAnim();
         transform.localScale = Vector3.zero;
         StartCoroutine(KillTheBuns());
+    }
+
+    private void ResetCounters()
+    {
+        meatTMPro.text = "0";
+        cheeseTMPro.text = "0";
+        vegetableTMPro.text = "0";
+        tofuTMPro.text = "0";
+        breadTMPro.text = "0";
     }
 
     void RemoveBuergerBunSpawner()

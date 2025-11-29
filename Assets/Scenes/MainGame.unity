@@ -130,6 +130,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 179642562507280532, guid: 93d12416a8f25e144be524b619fd223c, type: 3}
+      propertyPath: RenderTextureMultiplier
+      value: 1.4
+      objectReference: {fileID: 0}
     - target: {fileID: 184312435976909284, guid: 93d12416a8f25e144be524b619fd223c, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

@@ -25,13 +25,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 601518177240150366}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7302410347976352080}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3755785332479815936
 MeshFilter:
@@ -108,6 +108,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7302410347976352092}
+  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 10, y: 1.5, z: 10}
@@ -116,7 +117,6 @@ Transform:
   - {fileID: 6153371478739490668}
   - {fileID: 1518159076514239492}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &7302410347976352093
 BoxCollider:
@@ -126,9 +126,17 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7302410347976352092}
   m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
   m_IsTrigger: 0
+  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
+  serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-6164158910557741941
@@ -143,12 +151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c807d3801a22744fb26576c9fe32b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: 2
+  foodType: 1
 --- !u!1001 &5976157681104515207
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
+    serializedVersion: 3
     m_TransformParent: {fileID: 7302410347976352080}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 350604b8481b7b54795a8ecc136bc37d, type: 3}
@@ -212,6 +221,12 @@ PrefabInstance:
       value: Thin_Cube
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 350604b8481b7b54795a8ecc136bc37d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5098033887055900407}
   m_SourcePrefab: {fileID: 100100000, guid: 350604b8481b7b54795a8ecc136bc37d, type: 3}
 --- !u!4 &6153371478739490668 stripped
 Transform:
